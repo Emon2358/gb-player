@@ -6,6 +6,7 @@ on:
       - 'midi/**'
       - 'render_midi.py'
       - '.github/workflows/render_midi.yml'
+      - 'DMG-CPU1.5.SF2'
   workflow_dispatch:
 
 jobs:
@@ -32,7 +33,7 @@ jobs:
 
       - name: Render MIDI to MP3
         env:
-          SOUND_FONT: ./GameBoy.sf2
+          SOUND_FONT: ./DMG-CPU1.5.SF2   # 新しい SoundFont 名を指定
           MIDI_DIR:    ./midi
           OUTPUT_DIR:  ./output
         run: |
@@ -41,7 +42,11 @@ jobs:
       - name: Debug
         run: |
           echo "=== output directory ==="
-          ls -lh output || echo "output not found"
+          if [ -d output ]; then
+            ls -lh output
+          else
+            echo "output directory does not exist"
+          fi
 
       - name: Upload MP3 artifacts
         uses: actions/upload-artifact@v4
@@ -49,10 +54,3 @@ jobs:
           name: midi-mp3
           path: output
 
-      - name: Commit generated MP3s back to repo
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "🔉 Add generated MP3 files"
-          file_pattern: output/*.mp3
-          branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
