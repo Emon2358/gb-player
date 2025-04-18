@@ -1,9 +1,9 @@
 import os
+import subprocess
 from midi2audio import FluidSynth
-from pydub import AudioSegment
 
-def process_all_midis(midi_dir="midi", output_dir="output", sf2_path="DMG-CPU1.5.SF2"):
-    # FluidSynth インスタンスを生成（ゲームボーイ SoundFont を読み込む）
+def process_all_midis(midi_dir="midi", output_dir="output", sf2_path="GameBoy.sf2"):
+    # FluidSynth インスタンスを生成（ゲームボーイ風 SoundFont を読み込む）
     fs = FluidSynth(sound_font=sf2_path)
 
     os.makedirs(output_dir, exist_ok=True)
@@ -20,8 +20,15 @@ def process_all_midis(midi_dir="midi", output_dir="output", sf2_path="DMG-CPU1.5
         print(f"[1/2] Rendering {midi_path} → {wav_path}")
         fs.midi_to_audio(midi_path, wav_path)
 
-        print(f"[2/2] Converting {wav_path} → {mp3_path}")
-        AudioSegment.from_wav(wav_path).export(mp3_path, format="mp3")
+        print(f"[2/2] Converting {wav_path} → {mp3_path} via ffmpeg")
+        subprocess.run([
+            "ffmpeg",
+            "-y",               # 上書き確認なし
+            "-i", wav_path,     # 入力ファイル
+            "-codec:a", "libmp3lame",
+            "-qscale:a", "2",   # 音質設定（VBR で約 190kbps 程度）
+            mp3_path
+        ], check=True)
 
         print(f"✔ Saved: {mp3_path}\n")
 
