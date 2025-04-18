@@ -1,9 +1,18 @@
 import os
 import subprocess
+import sys
 from midi2audio import FluidSynth
 
 def process_all_midis(midi_dir="midi", output_dir="output", sf2_path="DMG-CPU1.5.SF2"):
-    # FluidSynth インスタンスを生成（ゲームボーイ風 SoundFont を読み込む）
+    # SoundFont が存在するかチェック
+    if not os.path.isfile(sf2_path):
+        print(f"[ERROR] SoundFont not found: {sf2_path}", file=sys.stderr)
+        sys.exit(1)
+    else:
+        size = os.path.getsize(sf2_path)
+        print(f"[INFO] Using SoundFont: {sf2_path} ({size} bytes)")
+
+    # FluidSynth インスタンスを生成
     fs = FluidSynth(sound_font=sf2_path)
 
     os.makedirs(output_dir, exist_ok=True)
@@ -23,10 +32,10 @@ def process_all_midis(midi_dir="midi", output_dir="output", sf2_path="DMG-CPU1.5
         print(f"[2/2] Converting {wav_path} → {mp3_path} via ffmpeg")
         subprocess.run([
             "ffmpeg",
-            "-y",               # 上書き確認なし
-            "-i", wav_path,     # 入力ファイル
+            "-y",
+            "-i", wav_path,
             "-codec:a", "libmp3lame",
-            "-qscale:a", "2",   # 音質設定（VBR で約 190kbps 程度）
+            "-qscale:a", "2",
             mp3_path
         ], check=True)
 
@@ -36,5 +45,5 @@ if __name__ == "__main__":
     # 環境変数で上書き可能
     midi_dir   = os.getenv("MIDI_DIR", "midi")
     output_dir = os.getenv("OUTPUT_DIR", "output")
-    sf2_path   = os.getenv("SOUND_FONT", "GameBoy.sf2")
+    sf2_path   = os.getenv("SOUND_FONT", "DMG-CPU1.5.SF2")
     process_all_midis(midi_dir, output_dir, sf2_path)
