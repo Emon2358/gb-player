@@ -32,14 +32,14 @@ jobs:
 
       - name: Render MIDI to MP3
         env:
-          SOUND_FONT: ./GameBoy.sf2   # SoundFont のパス
-          MIDI_DIR:    ./midi         # 入力 MIDI ディレクトリ
-          OUTPUT_DIR:  ./output       # 出力先ディレクトリ
+          SOUND_FONT: ./GameBoy.sf2
+          MIDI_DIR:    ./midi
+          OUTPUT_DIR:  ./output
         run: |
           python render_midi.py
 
       - name: MP3 をアーティファクトとしてアップロード
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: midi-mp3
           path: output/*.mp3
