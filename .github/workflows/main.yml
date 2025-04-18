@@ -32,23 +32,27 @@ jobs:
 
       - name: Render MIDI to MP3
         env:
-          SOUND_FONT: ./GameBoy.sf2   # SoundFont のパス
-          MIDI_DIR:    ./midi         # 入力 MIDI ディレクトリ
-          OUTPUT_DIR:  ./output       # 出力先ディレクトリ
+          SOUND_FONT: ./GameBoy.sf2
+          MIDI_DIR:    ./midi
+          OUTPUT_DIR:  ./output
         run: |
           python render_midi.py
 
       - name: Debug
         run: |
           echo "=== output directory ==="
-          if [ -d output ]; then
-            ls -lh output
-          else
-            echo "output directory does not exist"
-          fi
+          ls -lh output || echo "output not found"
 
       - name: Upload MP3 artifacts
         uses: actions/upload-artifact@v4
         with:
           name: midi-mp3
           path: output
+
+      - name: Commit generated MP3s back to repo
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "🔉 Add generated MP3 files"
+          file_pattern: output/*.mp3
+          branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
