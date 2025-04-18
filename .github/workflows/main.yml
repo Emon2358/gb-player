@@ -38,7 +38,7 @@ jobs:
         run: |
           python render_midi.py
 
-      - name: Debug: list output directory
+      - name: Debug
         run: |
           echo "=== output directory ==="
           if [ -d output ]; then
