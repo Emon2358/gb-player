@@ -2,7 +2,7 @@ import os
 from midi2audio import FluidSynth
 from pydub import AudioSegment
 
-def process_all_midis(midi_dir="midi", output_dir="output", sf2_path="GameBoy.sf2"):
+def process_all_midis(midi_dir="midi", output_dir="output", sf2_path="DMG-CPU1.5.SF2"):
     # FluidSynth インスタンスを生成（ゲームボーイ SoundFont を読み込む）
     fs = FluidSynth(sound_font=sf2_path)
 
