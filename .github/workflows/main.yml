@@ -13,32 +13,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: リポジトリをチェックアウト
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: システム依存ツールをインストール
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y fluidsynth ffmpeg
 
-      - name: Python をセットアップ
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      - name: Python ライブラリをインストール
+      - name: Install Python libraries
         run: |
-          pip install midi2audio pydub
+          pip install midi2audio
 
       - name: Render MIDI to MP3
         env:
-          SOUND_FONT: ./GameBoy.sf2
-          MIDI_DIR:    ./midi
-          OUTPUT_DIR:  ./output
+          SOUND_FONT: ./GameBoy.sf2   # SoundFont のパス
+          MIDI_DIR:    ./midi         # 入力 MIDI ディレクトリ
+          OUTPUT_DIR:  ./output       # 出力先ディレクトリ
         run: |
           python render_midi.py
 
-      - name: MP3 をアーティファクトとしてアップロード
+      - name: Upload MP3 artifacts
         uses: actions/upload-artifact@v4
         with:
           name: midi-mp3
