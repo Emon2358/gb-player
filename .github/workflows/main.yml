@@ -1,0 +1,45 @@
+name: Render MIDI → MP3
+
+on:
+  push:
+    paths:
+      - 'midi/**'
+      - 'render_midi.py'
+      - '.github/workflows/render_midi.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: システム依存ツールをインストール
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fluidsynth ffmpeg
+
+      - name: Python をセットアップ
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Python ライブラリをインストール
+        run: |
+          pip install midi2audio pydub
+
+      - name: Render MIDI to MP3
+        env:
+          SOUND_FONT: ./GameBoy.sf2   # SoundFont のパス
+          MIDI_DIR:    ./midi         # 入力 MIDI ディレクトリ
+          OUTPUT_DIR:  ./output       # 出力先ディレクトリ
+        run: |
+          python render_midi.py
+
+      - name: MP3 をアーティファクトとしてアップロード
+        uses: actions/upload-artifact@v3
+        with:
+          name: midi-mp3
+          path: output/*.mp3
