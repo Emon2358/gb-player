@@ -38,8 +38,17 @@ jobs:
         run: |
           python render_midi.py
 
+      - name: Debug: list output directory
+        run: |
+          echo "=== output directory ==="
+          if [ -d output ]; then
+            ls -lh output
+          else
+            echo "output directory does not exist"
+          fi
+
       - name: Upload MP3 artifacts
         uses: actions/upload-artifact@v4
         with:
           name: midi-mp3
-          path: output/*.mp3
+          path: output
